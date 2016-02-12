@@ -48,8 +48,19 @@ export_env_dir() {
   fi
 }
 export_env_dir "$ENV_DIR" "^APT_"
+APT_ENABLE=${APT_ENABLE:-yes}
 APT_CACHING=${APT_CACHING:-no}
 APT_FLAG_DIR="$CACHE_DIR/apt/flags"
+
+if ! [ -f $BUILD_DIR/Aptfile ]; then
+  topic "Aptfile is not found"
+  exit 0
+fi
+
+if ! [ $APT_ENABLE = yes -o $APT_ENABLE = true -o $APT_ENABLE = 1 ]; then
+  topic "Apt is disabled"
+  exit 0
+fi
 
 if [ $APT_CACHING = yes ]; then
   if [ -f $APT_FLAG_DIR/Aptfile ] && cmp -s $BUILD_DIR/Aptfile $APT_FLAG_DIR/Aptfile ; then
